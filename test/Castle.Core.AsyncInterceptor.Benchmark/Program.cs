@@ -1,22 +1,18 @@
-// Copyright (c) 2016-2020 James Skimming. All rights reserved.
+// Copyright (c) 2016-2022 James Skimming. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace Castle.DynamicProxy
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using BenchmarkDotNet.Configs;
-    using BenchmarkDotNet.Reports;
-    using BenchmarkDotNet.Running;
+namespace Castle.DynamicProxy;
 
-    public static class Program
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Reports;
+using BenchmarkDotNet.Running;
+
+public static class Program
+{
+    public static void Main()
     {
-        public static void Main()
-        {
-            Summary[] summaries = BenchmarkRunner.Run(typeof(Program).Assembly);
-            ////Summary summary =
-            ////    BenchmarkRunner.Run<IncompleteResultTaskAsynchronousInterceptorBenchmarks>();
-        }
+        Summary[] summaries = BenchmarkRunner.Run(typeof(Program).Assembly);
+        ////Summary summary =
+        ////    BenchmarkRunner.Run<IncompleteResultTaskAsynchronousInterceptorBenchmarks>();
     }
 }

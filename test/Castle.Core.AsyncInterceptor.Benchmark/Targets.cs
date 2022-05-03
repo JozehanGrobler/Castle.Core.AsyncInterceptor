@@ -1,122 +1,116 @@
-// Copyright (c) 2016-2020 James Skimming. All rights reserved.
+// Copyright (c) 2016-2022 James Skimming. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-namespace Castle.DynamicProxy
+namespace Castle.DynamicProxy;
+
+public interface ITarget
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
+    void VoidSynchronous();
 
-    public interface ITarget
+    int ResultSynchronous();
+
+    Task CompletedTaskAsynchronous();
+
+    Task<int> CompletedResultTaskAsynchronous();
+
+    Task IncompleteTaskAsynchronous();
+
+    Task<int> IncompleteResultTaskAsynchronous();
+}
+
+public class Targets : ITarget
+{
+    private static readonly Task<int> CompletedResultTask = Task.FromResult(1);
+
+    public void VoidSynchronous()
     {
-        void VoidSynchronous();
-
-        int ResultSynchronous();
-
-        Task CompletedTaskAsynchronous();
-
-        Task<int> CompletedResultTaskAsynchronous();
-
-        Task IncompleteTaskAsynchronous();
-
-        Task<int> IncompleteResultTaskAsynchronous();
     }
 
-    public class Targets : ITarget
+    public int ResultSynchronous() => 1;
+
+    public Task CompletedTaskAsynchronous() => Task.CompletedTask;
+
+    public Task<int> CompletedResultTaskAsynchronous() => CompletedResultTask;
+
+    public async Task IncompleteTaskAsynchronous()
     {
-        private static readonly Task<int> CompletedResultTask = Task.FromResult(1);
-
-        public void VoidSynchronous()
-        {
-        }
-
-        public int ResultSynchronous() => 1;
-
-        public Task CompletedTaskAsynchronous() => Task.CompletedTask;
-
-        public Task<int> CompletedResultTaskAsynchronous() => CompletedResultTask;
-
-        public async Task IncompleteTaskAsynchronous()
-        {
-            await Task.Yield();
-        }
-
-        public async Task<int> IncompleteResultTaskAsynchronous()
-        {
-            await Task.Yield();
-            return 1;
-        }
+        await Task.Yield();
     }
 
-    public class TargetNopWrapper : ITarget
+    public async Task<int> IncompleteResultTaskAsynchronous()
     {
-        private readonly ITarget _inner;
+        await Task.Yield();
+        return 1;
+    }
+}
 
-        public TargetNopWrapper(ITarget inner) => _inner = inner;
+public class TargetNopWrapper : ITarget
+{
+    private readonly ITarget _inner;
 
-        public void VoidSynchronous() => _inner.VoidSynchronous();
+    public TargetNopWrapper(ITarget inner) => _inner = inner;
 
-        public int ResultSynchronous() => _inner.ResultSynchronous();
+    public void VoidSynchronous() => _inner.VoidSynchronous();
 
-        public Task CompletedTaskAsynchronous() => _inner.CompletedTaskAsynchronous();
+    public int ResultSynchronous() => _inner.ResultSynchronous();
 
-        public Task<int> CompletedResultTaskAsynchronous() => _inner.CompletedResultTaskAsynchronous();
+    public Task CompletedTaskAsynchronous() => _inner.CompletedTaskAsynchronous();
 
-        public Task IncompleteTaskAsynchronous() => _inner.IncompleteTaskAsynchronous();
+    public Task<int> CompletedResultTaskAsynchronous() => _inner.CompletedResultTaskAsynchronous();
 
-        public Task<int> IncompleteResultTaskAsynchronous() => _inner.IncompleteResultTaskAsynchronous();
+    public Task IncompleteTaskAsynchronous() => _inner.IncompleteTaskAsynchronous();
+
+    public Task<int> IncompleteResultTaskAsynchronous() => _inner.IncompleteResultTaskAsynchronous();
+}
+
+public class TargetAsyncWrapper : ITarget
+{
+    private readonly ITarget _inner;
+
+    public TargetAsyncWrapper(ITarget inner) => _inner = inner;
+
+    public void VoidSynchronous()
+    {
+        Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
+        _inner.VoidSynchronous();
+        Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
     }
 
-    public class TargetAsyncWrapper : ITarget
+    public int ResultSynchronous()
     {
-        private readonly ITarget _inner;
+        Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
+        int result = _inner.ResultSynchronous();
+        Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
+        return result;
+    }
 
-        public TargetAsyncWrapper(ITarget inner) => _inner = inner;
+    public async Task CompletedTaskAsynchronous()
+    {
+        await Task.Yield();
+        await _inner.CompletedTaskAsynchronous().ConfigureAwait(false);
+        await Task.Yield();
+    }
 
-        public void VoidSynchronous()
-        {
-            Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
-            _inner.VoidSynchronous();
-            Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
-        }
+    public async Task<int> CompletedResultTaskAsynchronous()
+    {
+        await Task.Yield();
+        int result = await _inner.CompletedResultTaskAsynchronous().ConfigureAwait(false);
+        await Task.Yield();
+        return result;
+    }
 
-        public int ResultSynchronous()
-        {
-            Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
-            int result = _inner.ResultSynchronous();
-            Task.Run(async () => await Task.Yield()).GetAwaiter().GetResult();
-            return result;
-        }
+    public async Task IncompleteTaskAsynchronous()
+    {
+        await Task.Yield();
+        await _inner.IncompleteTaskAsynchronous().ConfigureAwait(false);
+        await Task.Yield();
+    }
 
-        public async Task CompletedTaskAsynchronous()
-        {
-            await Task.Yield();
-            await _inner.CompletedTaskAsynchronous().ConfigureAwait(false);
-            await Task.Yield();
-        }
-
-        public async Task<int> CompletedResultTaskAsynchronous()
-        {
-            await Task.Yield();
-            int result = await _inner.CompletedResultTaskAsynchronous().ConfigureAwait(false);
-            await Task.Yield();
-            return result;
-        }
-
-        public async Task IncompleteTaskAsynchronous()
-        {
-            await Task.Yield();
-            await _inner.IncompleteTaskAsynchronous().ConfigureAwait(false);
-            await Task.Yield();
-        }
-
-        public async Task<int> IncompleteResultTaskAsynchronous()
-        {
-            await Task.Yield();
-            int result = await _inner.IncompleteResultTaskAsynchronous().ConfigureAwait(false);
-            await Task.Yield();
-            return result;
-        }
+    public async Task<int> IncompleteResultTaskAsynchronous()
+    {
+        await Task.Yield();
+        int result = await _inner.IncompleteResultTaskAsynchronous().ConfigureAwait(false);
+        await Task.Yield();
+        return result;
     }
 }
