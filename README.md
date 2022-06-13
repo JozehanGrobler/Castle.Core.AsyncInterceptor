@@ -7,11 +7,12 @@
 [![codecov Coverage Status](https://img.shields.io/codecov/c/github/JSkimming/Castle.Core.AsyncInterceptor/master.svg?label=Codecov)](https://codecov.io/gh/JSkimming/Castle.Core.AsyncInterceptor "Codecov Coverage Status")
 [![Coveralls Coverage Status](https://img.shields.io/coveralls/github/JSkimming/Castle.Core.AsyncInterceptor/master.svg?label=Coveralls)](https://coveralls.io/r/JSkimming/Castle.Core.AsyncInterceptor "Coveralls Coverage Status")
 [![Latest release](https://img.shields.io/github/release/JSkimming/Castle.Core.AsyncInterceptor.svg)](https://github.com/JSkimming/Castle.Core.AsyncInterceptor/releases "Latest release")
+
 <!--[![Coverity Scan Status](https://img.shields.io/coverity/scan/4829.svg)](https://scan.coverity.com/projects/4829 "Coverity Scan Status")-->
 
 ## What is AsyncInterceptor?
 
-__AsyncInterceptor__ is an extension to [Castle DynamicProxy](http://www.castleproject.org/projects/dynamicproxy/) to
+**AsyncInterceptor** is an extension to [Castle DynamicProxy](http://www.castleproject.org/projects/dynamicproxy/) to
 simplify the development of interceptors for asynchronous methods.
 
 ## Why do I want intercept methods?
@@ -63,13 +64,13 @@ Therefore with asynchronous methods _Step 2_ is executed before the underlying m
 
 ## How to intercept asynchronous methods without AsyncInterceptor?
 
-To demonstrate how __AsyncInterceptor__ simplifies the interception of asynchronous methods, let's show how to do it
-without __AsyncInterceptor__.
+To demonstrate how **AsyncInterceptor** simplifies the interception of asynchronous methods, let's show how to do it
+without **AsyncInterceptor**.
 
 ### Methods that return [`Task`](https://msdn.microsoft.com/en-us/library/system.threading.tasks.task.aspx)
 
 To intercept methods that return a [`Task`](https://msdn.microsoft.com/en-us/library/system.threading.tasks.task.aspx)
-(__Note:__ it must be a [`Task`](https://msdn.microsoft.com/en-us/library/system.threading.tasks.task.aspx) not
+(**Note:** it must be a [`Task`](https://msdn.microsoft.com/en-us/library/system.threading.tasks.task.aspx) not
 [`Task<TResult>`](https://msdn.microsoft.com/en-us/library/dd321424.aspx)) is not overly complicated.
 
 The invocation provides access to the return value. By checking the type of the return value it is possible to await
@@ -109,7 +110,7 @@ from simple. It's the reason why I created this library. Rather than go into the
 of reflection) the stack overflow question [Intercept async method that returns generic Task<> via
 DynamicProxy](https://stackoverflow.com/a/43272955) provides great overview.
 
-## How to intercept asynchronous methods __with__ AsyncInterceptor?
+## How to intercept asynchronous methods **with** AsyncInterceptor?
 
 If you've got this far, then it's probably safe to assume you want to intercept asynchronous methods, and the options
 for doing it manually look like a lot of work.
@@ -171,9 +172,9 @@ public class ExceptionHandlingInterceptor : AsyncInterceptorBase
 }
 ```
 
-### Option 2:  Implement `IAsyncInterceptor` interface to intercept invocations
+### Option 2: Implement `IAsyncInterceptor` interface to intercept invocations
 
-Create a class them implements `IAsyncInterceptor`, then register it for interception in the same was as `IInterceptor`
+Create a class that implements `IAsyncInterceptor`, then register it for interception in the same was as `IInterceptor`
 using the ProxyGenerator extension methods, e.g.
 
 ```csharp
